@@ -1,3 +1,7 @@
+body, html {
+    overflow: hidden; /* Add this line */
+}
+
 body {
     font-family: 'Arial', sans-serif;
     background-color: #f8f9fa;
@@ -10,6 +14,7 @@ body {
 }
 
 .app-container {
+    padding-top: 50px;
     text-align: center;
     background-color: white;
     padding: 20px;
@@ -44,17 +49,36 @@ input[type="text"] {
     flex-grow: 1;
 }
 
+/* Buttons with Pastel Blue Color */
 button {
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-    border: none;
-    transition: background-color 0.3s;
+    background-color: #89afd4; /* Pastel blue color */
+    color: #ffffff; /* White text color for better contrast */
+    border: none; /* Remove default border */
+    padding: 10px 15px; /* Adjust padding as needed */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Adjust font size as needed */
+    cursor: pointer; /* Cursor changes to pointer to indicate it's clickable */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #95b4e0; /* Slightly darker shade on hover */
 }
+
+/* Dropdown Menu Styling */
+select {
+    background-color: #ffffff; /* White background */
+    color: #333333; /* Dark text color for readability */
+    border: 1px solid #A7C7E7; /* Border color similar to button */
+    padding: 10px; /* Padding inside the dropdown */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px; /* Font size */
+    cursor: pointer; /* Cursor pointer */
+    -webkit-appearance: none; /* Removes default styling on WebKit browsers */
+    -moz-appearance: none; /* Removes default styling on Firefox */
+    appearance: none; /* Removes default styling */
+}
+
 
 .indicator {
     width: 0;
@@ -63,14 +87,14 @@ button:hover {
     border-right: 15px solid transparent;
     border-top: 20px solid #007bff;
     position: absolute;
-    top: -20px;
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
 }
 
 /* Dark Mode Styles */
 body.dark-mode {
-    background-color: #2c3e50;
+    background-color: #18334e;
     color: #ecf0f1;
 }
 
@@ -79,7 +103,7 @@ body.dark-mode {
 }
 
 button.dark-mode {
-    background-color: #2980b9;
+    background-color: #7199c0;
     color: #ecf0f1;
 }
 
@@ -87,6 +111,7 @@ button.dark-mode {
     position: absolute;
     top: 10px;
     right: 10px;
+    z-index: 10;
     background-color: transparent;
     border: none;
     font-size: 24px;
@@ -119,4 +144,82 @@ button.dark-mode {
 body.dark-mode .winner-display {
     background-color: #34495e;
     color: #ecf0f1;
+}
+
+/* For Webkit (Chrome, Safari, etc.) */
+::-webkit-scrollbar {
+    width: 5px; /* Adjust the width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+    background: transparent; /* Make the track invisible */
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(136, 136, 136, 0.3); /* Lighter thumb color with reduced opacity */
+    border-radius: 25px; /* Roundness of the thumb */
+    min-height: 20px; /* Minimum height of the thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(85, 85, 85, 0.3); /* Slightly darker thumb color when hovered */
+}
+
+/* For Firefox */
+* {
+    scrollbar-width: thin; /* 'auto' or 'thin' */
+    scrollbar-color: rgba(136, 136, 136, 0.3) transparent; /* Lighter thumb color and transparent track */
+}
+
+
+/* Media queries for responsiveness on mobile devices */
+@media (max-width: 600px) {
+    .app-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start; /* This will distribute the available space between the items */
+        height: 100vh; /*This will make the app-container take up the full viewport height*/
+        padding: 20px; /* Add some padding to prevent items from touching the edges of the screen */
+        overflow-y: auto;
+    }
+
+    .wheel-container {
+        width: 100%;
+        max-width: 100%;
+        /* max-height: 100vh; */
+        /* overflow: hidden; */
+    }
+
+    /* Adjust the font size of the text on the wheel */
+    #wheel {
+        font-size: 12px;
+        max-width: 100%;
+    }
+
+    /* Make the input container and its children elements stack vertically */
+    .input-container {
+        flex-direction: column;
+        width: 100%; /* Make the input container take up the full width of the app container */
+        box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        padding: 10px; /* Add some padding to prevent items from touching the edges of the container */
+        /* overflow-y: auto; */
+    }
+
+    .input-container > * {
+        width: 100%; /* Make the children elements take up the full width of the input container */
+        margin-bottom: 10px; /* Add some margin to the bottom of the children elements for spacing */
+    }
+
+    .input-container > *:last-child {
+        margin-bottom: 0; /* Remove the bottom margin from the last child element */
+    }
+
+
+    /* Adjust the size and position of the dark mode toggle button */
+    #darkModeToggle {
+        font-size: 24px;
+        top: 10px;
+        right: 10px;
+    }
 }
