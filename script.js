@@ -5,6 +5,24 @@ const restaurants = [];
 let currentRotation = 0;
 let animationFrameId;
 let winnerIndex = null;
+let animationId = null;
+let totalSegments = 0; 
+let isCleared = false; // Flag to indicate if the clear action has been initiated
+
+
+function resizeCanvas() {
+    const size = Math.min(window.innerWidth, window.innerHeight, 500);
+    canvas.width = size;
+    canvas.height = size;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);  // Clear the canvas before redrawing
+    drawWheel(currentRotation);  // Redraw the wheel with the current rotation
+}
+
+// Call the function initially to set the canvas size
+resizeCanvas();
+
+// Add an event listener to resize the canvas when the window size changes
+window.addEventListener('resize', resizeCanvas);
 
 // Mock list of restaurants for Suria KLCC
 const suriaKLCCRestaurants = ["Foodcourt", "Nandos", "Fishbowl", "ISetan", "Cold Storage"];
@@ -23,6 +41,7 @@ function getSegmentColor(index, total) {
 }
 
 function drawWheel(rotation = 0) {
+    totalSegments = restaurants.length;
     const totalRestaurants = restaurants.length;
     if (totalRestaurants === 0) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -34,32 +53,33 @@ function drawWheel(rotation = 0) {
 
     restaurants.forEach((restaurant, index) => {
         ctx.beginPath();
-        ctx.moveTo(250, 250);
+        ctx.moveTo(canvas.width / 2, canvas.height / 2);
         const startAngle = anglePerSlice * index + rotation;
         const endAngle = anglePerSlice * (index + 1) + rotation;
-        ctx.arc(250, 250, 250, startAngle, endAngle);
+        ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width / 2, startAngle, endAngle);
         ctx.closePath();
         ctx.fillStyle = getSegmentColor(index, totalRestaurants);
         ctx.fill();
 
         ctx.save();
-        ctx.translate(250, 250);
+        ctx.translate(canvas.width / 2, canvas.height / 2);
         ctx.rotate(startAngle + anglePerSlice / 2);
         ctx.textAlign = 'center';
         ctx.fillStyle = '#2d3436';
         ctx.font = '16px Arial';
-        ctx.fillText(restaurant, 125, 0);
+        ctx.fillText(restaurant, canvas.width / 4, 0);
         ctx.restore();
     });
 
     ctx.fillStyle = '#000';
     ctx.beginPath();
-    ctx.moveTo(250, -20);
-    ctx.lineTo(235, 10);
-    ctx.lineTo(265, 10);
+    ctx.moveTo(canvas.width / 2, -20);
+    ctx.lineTo(canvas.width / 2 - 15, 10);
+    ctx.lineTo(canvas.width / 2 + 15, 10);
     ctx.closePath();
     ctx.fill();
 }
+
 
 function addRestaurant() {
     const restaurantName = restaurantInput.value.trim();
@@ -69,13 +89,16 @@ function addRestaurant() {
     }
     restaurantInput.value = '';
     restaurantInput.focus();
+    totalSegments = restaurants.length;
 }
 
-let totalSegments = restaurants.length; // Total number of segments
+
 let currentStartingSegment = Math.ceil(totalSegments / 2); // Initialize to the middle segment
 
 
 function spinWheel() {
+    isCleared = false; // Reset the flag at the beginning of spinning
+
     if (restaurants.length === 0) {
         alert("Please add at least one restaurant before spinning the wheel.");
         return;
@@ -86,7 +109,7 @@ function spinWheel() {
     let start = null;
     let initialRotation = currentRotation;
     let totalRotations = Math.random() * 10 + 5;
-    const totalRestaurants = restaurants.length;
+    const totalSegments = restaurants.length; // Define totalSegments here
 
     function step(timestamp) {
         if (!start) start = timestamp;
@@ -101,22 +124,24 @@ function spinWheel() {
         if (progress < duration) {
             animationFrameId = requestAnimationFrame(step);
         } else {
-            totalSegments = restaurants.length; // Update in case the number of segments has changed
-            const segmentAngle = 2 * Math.PI / totalSegments;
-            const initialOffset = segmentAngle * (currentStartingSegment - 1 + 0.5);
+            cancelAnimationFrame(animationFrameId); // Stop the animation
 
-            const adjustedRotation = (currentRotation + initialOffset) % (2 * Math.PI);
-            winnerIndex = Math.floor(adjustedRotation / segmentAngle) % totalSegments;
+            if (!isCleared) { // Check if the clear action has been initiated
+                const segmentAngle = 2 * Math.PI / totalSegments;
+                const adjustedRotation = (currentRotation % (2 * Math.PI)) + segmentAngle / 2;
+                winnerIndex = Math.floor(adjustedRotation / segmentAngle) % totalSegments;
 
-            // Update the starting segment for the next spin
-            currentStartingSegment = (winnerIndex + 1) % totalSegments;
-
-            triggerConfetti();
+                triggerConfetti();
+            }
         }
     }
 
     requestAnimationFrame(step);
 }
+
+
+
+
 
 // ... existing JavaScript code ...
 
@@ -125,28 +150,30 @@ function triggerConfetti() {
         confetti({
             particleCount: 100,
             spread: 70,
-            origin: { y: 0.6 },
-            zIndex: 0
+            origin: { y: 0.6 }
         });
-        
     } else {
         console.error("Confetti library not loaded.");
     }
 }
 
+
 function clearWheel() {
+    isCleared = true; // Set the flag to true when clear is clicked
+
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+    }
+
     restaurants.length = 0;
     currentRotation = 0;
     winnerIndex = null;
     drawWheel();
     const mallSelect = document.getElementById('mallSelect');
     mallSelect.value = "";
-    if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-        animationFrameId = null;
-    }
-
 }
+
 
 function loadSuriaKLCCRestaurants() {
     const checkbox = document.getElementById('suriaKLCCCheckbox');
