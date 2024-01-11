@@ -186,14 +186,23 @@ function loadSuriaKLCCRestaurants() {
     }
 }
 
-function loadMallRestaurants() {
-    const selectedMall = document.getElementById('mallSelect').value;
-    if (selectedMall && mallRestaurants[selectedMall]) {
+document.addEventListener('DOMContentLoaded', function() {
+    const mallSelect = document.getElementById('mallSelect');
+
+    mallSelect.addEventListener('change', function() {
+        if (this.value) {
+            loadMallRestaurants(this.value);
+        } else {
+            clearWheel();
+        }
+    });
+});
+
+function loadMallRestaurants(selectedMall) {
+    if (mallRestaurants[selectedMall]) {
         restaurants.length = 0;
         mallRestaurants[selectedMall].forEach(restaurant => restaurants.push(restaurant));
         drawWheel();
-    } else {
-        alert("Please select a mall.");
     }
 }
 
@@ -209,20 +218,27 @@ function randomlySelectMall() {
 
 function toggleDarkMode() {
     const body = document.body;
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const darkModeIcon = document.getElementById('darkModeIcon');
+    const appContainer = document.querySelector('.app-container');
+    const buttons = document.querySelectorAll('button');
+    const selects = document.querySelectorAll('select');
 
+    // Toggle the dark-mode class on the body
     body.classList.toggle('dark-mode');
-    const isDarkMode = body.classList.contains('dark-mode');
 
-    if (isDarkMode) {
-        darkModeIcon.textContent = '🌜';
-        darkModeToggle.classList.add('dark-mode');
+    // Optionally, toggle the dark-mode class on other elements
+    appContainer.classList.toggle('dark-mode');
+    buttons.forEach(btn => btn.classList.toggle('dark-mode'));
+    selects.forEach(select => select.classList.toggle('dark-mode'));
+
+    // Update the dark mode icon
+    const darkModeIcon = document.getElementById('darkModeIcon');
+    if (body.classList.contains('dark-mode')) {
+        darkModeIcon.textContent = '🌜'; // Moon icon for dark mode
     } else {
-        darkModeIcon.textContent = '🌞';
-        darkModeToggle.classList.remove('dark-mode');
+        darkModeIcon.textContent = '🌞'; // Sun icon for light mode
     }
 }
+
 
 restaurantInput.addEventListener('keyup', function(event) {
     if (event.key === 'Enter') {
